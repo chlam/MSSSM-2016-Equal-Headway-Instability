@@ -2,79 +2,95 @@
 
 > * Group Name: (be creative!)
 > * Group participants names: Maicol FABBRI, Cheuk Wing Edmond LAM
-> * Project Title: Train Platform Dynamics
+> * Project Title: Equal Headway Instability
 
 ## General Introduction
 
-Nowadays, public transport is a crucial element of all the big cities and not. In this category, one of the most important is without any doubts the train.
+Efficient public transport is crucial to a city. An effective and punctual public transport system minimizes enormous economic costs brought by delays, and helps reduce traffic jam as citizens are more likely to switch to public transport with confidence. However, maintaining such a system is not trivial. Random factors may destabilize the system, making it operate below the optimal level. This project will look into one particular issue, equal headway instability.
 
-Our group aims to simulate the dynamics of a train platform. In particular, we are going to focus in the moment of a train arrival, when people alight the train and other people board. When a platform is really crowded or not sufficiently big, this can lead to unpleasant congestions, since different groups of people are moving in opposite directions (one towards the exits on the platform, the other to the train doors). The main question we want to investigate is which one is the relation between the density of people on the platform and the formation of congestions/bottlenecks.
+Equal headway instability refers to the ideal condition that vehicles (e.g. tram, bus, train) arrive at regular intervals. Maintaining equal headway is not an easy task, however. Even there is no other traffic between stations, tram or bus services may not achieve equal headway because of the random arrival of passengers. The following simple example illustrates this.
 
-(States your motivation clearly: why is it important / interesting to solve this problem?)
-(Add real-world examples, if any)
-(Put the problem into a historical context, from what does it originate? Are there already some proposed solutions?)
+At any time instant, the number of passengers at one station (station A) may be more than another. Consequently, a tram (tram A) at station A takes longer time to load the passengers than the tram behind (tram B) loading passengers at the station before (station B). Tram A is then delayed, and the distance between tram A and tram B is reduced. When tram B arrives at station A, there are fewer passengers to load than average (because tram A has just left not long ago) and tram B finishes loading earlier than average (because there are fewer passengers to load than average). An instability is thus triggered. If the next station tram A arrives has also a larger number of passengers than average, the instability grows. This is described as platooning, which can be characterized by the reduction in distance between tram A and tram B. Note that the tram behind tram B (tram C), because tram B has finished loading and left earlier than average, has more passengers to load than average at its next station. This will create another similar tram A - tram B platoon in tram C - tram D, for example. It is as well worth noting that tram B may not be fully utilized, whereas tram A is full. This indicates inefficiency of the transport of passengers created by this instability.
 
-## The Model
-
-The platform is assumed to be periodic and thus can be divided into several identical segments. A simulation MATLAB code will be written for one of the segments. This division simplifies the problem and allows a lower computational cost.
-
-As a preliminary setting, 4 coaches will park at a platform segment and each coach will have 2 doors. A platform segment will consist of two set of staircases. The passengers waiting on the platform (i.e. boarding passengers) will be randomly distributed on the platform. They react when the train arrives. The exact dimensions of the coaches, train doors, and the staircases are to be set at a later stage.
-
-The basic principle of the simulation is to divide the platform segment into a two-dimensional grid of cells. A passenger, either boarding or alighting, will occupy one cell. The size of each cell is scaled such that it matches a predetermined limit of packing of people. For example, a person could be predetermined to occupy at least a 0.5m x 0.5m space, so that for a train door of width, say, 1 m, will allow 2 people who are next to each other right in front of the door. In this case, the size of each cell will be 0.5m x 0.5m, and each train door will have 2 cells across it. The exact value of maximum density will be determined at a later stage.
-
-The two-dimensional grid of cells will be represented by a matrix in MATLAB. Cells which are occupied by a passenger will have a non-zero value in the corresponding entry of the matrix. Cells which are not occupied will have a zero value. The code iterates the matrix through a number of time steps, until all passengers have reached their destination and left the domain, either by leaving through the stairs or boarding the train. It is noted that in this study the relationship between the total number of time steps and several selected parameters, namely platform width and passenger density, is investigated. With this relationship, the total number of time steps can be minimized by adjusting the parameters. Although the total time required for this process of boarding/alighting is proportional to the total number of time steps required, the exact time required in such a process is not to be determined.
-
-The MATLAB code iterates the matrix through the time steps. During each iteration, a set of rules will determine the position of the passengers at the next time step according to their current positions. In actual implementation, the code will first read the positions of the passengers, and then define a “change” matrix to be applied to the current platform matrix according to the rules. After performing the arithmetic, the positions are updated. The procedure is then repeated.
-
-
-There will be three major types of rules which will determine the entries in the change matrix, thus the movement of passengers. The first is a pseudo-gravitational force which points from the destination of the passengers to the passengers. This will control the main direction the passengers intend to go if there are no other obstacles. The second type controls the speed of the movement. The speed of movement depends on the presence of obstacles within a certain radius of the passenger. The third type is the decision when a conflict occurs. This include 1) when two passengers are moving to the same cell in the next time step; and that 2) passengers want to keep a certain distance from each other when available. Other rules may be added at a later stage.
-
-It is worth noting that various attributes can be set to individual passengers. If time is sufficient, it can be implemented that some passengers carry luggages so that they occupy more than 1 grid cell and they move slower than others. Such luggage-carrying passengers can be set as randomly distributed among all passengers.
-
-(Define dependent and independent variables you want to study. Say how you want to measure them.) (Why is your model a good abtraction of the problem you want to study?) (Are you capturing all the relevant aspects of the problem?)
-
+Various strategies have been proposed in literature to increase the stability of the system (Gershenson & Pineda, 2009). However, the proposed strategies mostly are responsibilities of the service provider while strategies relying on the responsibility of passengers are limited. This project aims to introduce effective and applicable rules on passenger behaviour that increase the stability of the system, so that it self-stabilizes and allows for less uniformity and more randomness in the arrival of passengers. The project focuses on a typical generalized tram service system.
 
 ## Fundamental Questions
 
-This study will focus on the situation right after a train arrives at a platform, when all of the onboard passengers alight and the passengers of the next train, who are already on the platform, try to board the train. The platform will be the simulation domain. The main objective is to minimize the total time T_tot for the entire process to complete, i.e. all onboard passengers have exited the domain through the exits (e.g. stairs) on the platform and that all passengers for the next train have boarded the train.
+This project aims to answer the question of whether the stability of the system can be increased if passengers follow the instructions of willfully skipping a tram. The instruction is issued by the incoming tram if:
 
-1. What is the relationship between the total time T_tot and the platform width? Is there a critical width such that T_tot in-/decreases significantly?
-2. What is the relationship between the total time T_tot and the density of the passengers on the platform waiting for the next train? Is there a critical density such that T_tot in-/decreases significantly?
-3. Is it possible to describe the total time T_tot as a function of width of the platform and density of the people?
+1) the incoming tram is delayed; and
+2) there is another tram closely behind; and
+3) the previous tram at this station was not skipped
 
-Further questions, if the time is enough, could be:
-1. What happen if the people waiting for the train are not randomly distributed?
-2. Is the optimum way to sort the waiting people to minimize the time?
+This report will refer the case of passengers following the instructions as “passenger behaviour”.
 
-(At the end of the project you want to find the answer to these questions)
-(Formulate a few, clear questions. Articulate them in sub-questions, from the more general to the more specific. )
+## The Model
+
+The model of the simulation is based on what is presented in Gershenson and Pineda (2009), with modifications.
+
+A cyclic track is assumed and the number of trams is equal to the number of stations.
+
+The relative scale of different parameters (e.g. size of a time instant, capacity of a tram) is of importance in the simulation. For a realistic scaling, reasonable values are taken from real-life situations. The following describes the model and the choice of several important parameters and scales.
+
+a. Time
+
+A time instant in the simulation is set to have a length of 30 seconds, and the total duration of the simulation is 3 hours. Therefore, the number of time instants simulated for is 360.
+
+b. Length
+
+The track is discretized into a number of cells. In the simulation, the “length” of a cell equals the length of a tram coach and the length of a station for simplicity. A full cycle of a tram trip has a length of 50 cells.
+
+c. Trams
+
+There are in total 5 trams in the system. At the beginning of the simulation, they are equally spaced across the track (i.e. they are separated by 9 cells from each other), and they are not at any stations (i.e. they are moving). Each tram has a capacity of 60 passengers, which is a realistic number of a typical urban tram coach. Initially they are set to be half-full, so that each tram has 30 passengers on board.
+
+For simplicity, each tram has one coach only. It can be easily changed if necessary, however.
+
+Trams have a speed of 1 cell/time instant. They are assumed to be able to accelerate to this speed in no time, that is, a tram departs a station and moves to the next cell in one time instant. If there is a tram in front, the tram stops until the next cell is empty again. In each time instant a tram can move, remain position and/or load and unload passengers.
+
+d. Stations
+
+Similar to trams, the 5 stations are equally spaced in the system with 9 cells separating every two stations. Stations have an infinite capacity so that there is no limit on the number of passengers waiting at the stations.
+
+e. Passengers boarding and getting off
+
+The addition of passengers into the system follow the Poisson distribution and occurs every time instant. In each time instant, a number of passengers is generated following the Poisson distribution with a preset mean. Then a random station from the 5 stations is chosen and the generated number of passengers are all assigned to that station in this time instant. This process repeats until the end of the simulation.
+
+If a tram arrives at a station, passengers can get off the tram during a time instant. If there are people waiting at the station, boarding begins after every passenger who wants to get off the tram has got off. Boarding only begins if the conditions for boarding are satisfied. This is not to be detailed in this proposal. In general, passengers can board if the tram is not full. If passenger behaviour is enabled, passengers may board if the tram did not issue a “not to board” instruction. The conditions of the issuance of the instruction has been described in Section 2.
+
+It is possible for both boarding and getting off the tram to occur in one time instant. A limit on the number of people that can board or get off the tram per tram per time instant is imposed. For example, if the limit is 20, and there are 17 passengers who want to get off the tram, then in this time instant 17 passengers will get off the tram while 3 passengers waiting at the station will board the tram (if there are 3 or more passengers waiting at the station and boarding is allowed by other conditions). The limit is termed the “movement limit”.
+
+f. Schedule and delays
+
+The trams in the system follow a schedule. The schedule specifies at which time instant the tram should leave the station. If a tram leaves a station at a time later than that specified by the schedule, it is delayed and the extent of the delay is recorded in the system. Whenever a tram leaves a station at a time later than that specified by the schedule, the extent of the delay is recorded and accumulated as a property of that specific tram, and is termed the “accumulated delay”. At the beginning of the simulation, the accumulated delay for all trams is zero.
+
+A realistic schedule has to be set so that trams mostly depart on time for an average passenger load. To achieve this, each tram, after arriving at a station, has to stay for a minimum number of time instants before it can depart, even if there are no passengers who want to get off the tram and there are no passengers at the station who want to board the tram. This minimum number of time instants is set to be 3, which equals 1.5 minutes, and is termed the “minimum waiting time”. In setting the schedule, a tram is said to be on time if the number of time instants the tram takes from one departure at a station to the next departure at the next station equals the number of time instants a tram should take to travel from one station to the next station plus the minimum waiting time. For example, every two stations are separated by 9 cells. Thus it takes a tram 10 time instants to travel from one station to the next (speed = 1 cell/instant). Assuming the minimum waiting time of 3 time instants can accommodate the passenger load (passengers can complete boarding and getting off in 3 time instants), the tram should leave this station 10 + 3 = 13 instants after the departure of the previous station. It is worth noting that, for a low passenger load, maintaining a minimum waiting time optimal for an average load decreases the efficiency of the system. Yet, maintaining a minimum waiting time optimal for an average load when there is a high passenger load inevitably creates delays. The search for an optimal minimum waiting time is not the main focus of this project.
+
+g. Implementation of the model
+
+The implementation of the model in MATLAB is straightforward. A “current” matrix is defined which contains the current status of the system, e.g. positions of the trams, number of passengers onboard each tram and waiting at the stations, delays of the trams, etc. During each time instant iteration, a series of commands are computed to define a “transition” matrix. The “transition” matrix is of the same structure as the “current” matrix, but the information it contains represents the status of the system at the next time instant. At the end of each time instant iteration, the information in the “transition” matrix is simply copied to the “current” matrix.
 
 
 ## Expected Results
 
-It is expected that a larger width of the platform and/or a lower density of people on the platform will decrease the total train alighting and boarding time. However, it is expected that the relationship will not be linear and there is an optimal setting with the lowest total time. Increasing the width of the platform indefinitely, for example, will increase the average walking distance of the passengers.
-
-(What are the answers to the above questions that you expect to find before starting your research?)
+It is expected that the system will become more stable if passengers follow the instructions to skip a tram under the correct conditions. Equal headway will be maintained for less uniformity (higher randomness) in the arrival of passengers at different stations. However, it is possible that the number of passengers waiting at the stations may increase as from time to time they may have to wait for the next tram.
 
 
 ## References 
 
-The inspiration for this study comes from a previous project as well on train boarding:
-
-Hänni Dominic, Manser Patrick, Zoller Stefan. (2012). Pedestrian dynamics - Train platform dynamics. Retrieved from https://github.com/manserpa/pedestrian_dynamics_BlueMen
-
-(Add the bibliographic references you intend to use)
-(Explain possible extension to the above models)
-(Code / Projects Reports of the previous year)
+Gershenson, C., & Pineda, L. A. (2009). Why Does Public Transport Not Arrive on Time? The Pervasiveness of Equal Headway Instability. PLoS ONE, 4(10), e7292. http://doi.org/10.1371/journal.pone.0007292
 
 
 ## Research Methods
 
-This study employs an agent-based model such that each person is an agent and they interact with each other. In actual implementation, the platform is modelled as a grid consisting of a sufficient number of cells. These cells will interact with each other.
+The MATLAB code will generate two parameters for comparison between the two scenarios, namely, with and without passenger behaviour.
 
-(Cellular Automata, Agent-Based Model, Continuous Modeling...) (If you are not sure here: 1. Consult your colleagues, 2. ask the teachers, 3. remember that you can change it afterwards)
+The values for comparison include:
+1) the average number of people waiting at the stations at the end of the simulation; and
+2) the mean delay of trams at the end of the simulation
+
+A number of simulations will be carried out with different mean values for the Poisson distribution that the arrival of passengers follow. It is expected to give insights to how the passenger behaviour strategy reacts to an increasing passenger load, compared to that without passenger behaviour strategy.
 
 
 ## Other
 
-(mention datasets you are going to use)
